@@ -72,6 +72,7 @@ def _try_context_length(config: dict, context_length: int, use_tq: bool) -> bool
     env = os.environ.copy()
     env["VLLM_ENABLE_V1_MULTIPROCESSING"] = "0"
     env["TOKENIZERS_PARALLELISM"] = "false"
+    env["TURBOQUANT_REPO_ROOT"] = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     try:
         result = subprocess.run(
@@ -101,10 +102,9 @@ def _generate_oom_probe_script(config: dict, context_length: int, use_tq: bool) 
         os.environ["VLLM_ENABLE_V1_MULTIPROCESSING"] = "0"
         os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
-        # Add repo root to path so bench.* is importable
-        repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        if repo_root not in sys.path:
-            sys.path.insert(0, repo_root)
+        _repo_root = os.environ.get("TURBOQUANT_REPO_ROOT") or {os.path.dirname(os.path.dirname(os.path.abspath(__file__)))!r}
+        if _repo_root not in sys.path:
+            sys.path.insert(0, _repo_root)
 
         import json
         from vllm import LLM, SamplingParams

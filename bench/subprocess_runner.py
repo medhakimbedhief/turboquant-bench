@@ -71,6 +71,7 @@ def run_single_benchmark(
     env = os.environ.copy()
     env["VLLM_ENABLE_V1_MULTIPROCESSING"] = "0"
     env["TOKENIZERS_PARALLELISM"] = "false"
+    env["TURBOQUANT_REPO_ROOT"] = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     try:
         result = subprocess.run(
